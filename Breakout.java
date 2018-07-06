@@ -76,7 +76,7 @@ public class Breakout extends GraphicsProgram {
 			
 			for(int col = 0; col < NBRICKS_PER_ROW; col++) {
 				
-				GRect brick = new GRect(startingX + col * BRICK_WIDTH, startingY + row * BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT);
+				GRect brick = new GRect(startingX + (col * BRICK_WIDTH) + (col * BRICK_SEP), startingY + (row * BRICK_HEIGHT) + (row * BRICK_SEP), BRICK_WIDTH, BRICK_HEIGHT);
 				brick.setFilled(true);
 				
 				/** Setting color of the bricks based on position of the row */

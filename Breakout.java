@@ -69,27 +69,26 @@ public class Breakout extends GraphicsProgram {
 	private void setup() {
 		
 		/** Setting the x and y-coordinate to center the bricks in the middle of display */
-		startingX = APPLICATION_WIDTH / 2 - (NBRICK_ROWS * BRICK_WIDTH) / 2;
-		startingY = APPLICATION_HEIGHT / 2 - (NBRICKS_PER_ROW * BRICK_HEIGHT) / 2;
+		startingX = APPLICATION_WIDTH / 2 - (BRICK_WIDTH * NBRICKS_PER_ROW) / 2;
+		startingY = BRICK_Y_OFFSET;
 		
-		for (int row = 0; row < NBRICK_ROWS; row++) {
+		for(int row = 0; row < NBRICK_ROWS; row++) {
 			
-			for (int col = 0; col < NBRICKS_PER_ROW; col++) {
+			for(int col = 0; col < NBRICKS_PER_ROW; col++) {
 				
 				GRect brick = new GRect(startingX + col * BRICK_WIDTH, startingY + row * BRICK_HEIGHT, BRICK_WIDTH, BRICK_HEIGHT);
 				brick.setFilled(true);
 				
-				
-				/** Set the colors based on the row */
-				if (row <= 1) {
+				/** Setting color of the bricks based on position of the row */
+				if(row <= 1) {
 					brick.setFillColor(Color.red);
-				} else if (row <= 3) {
+				} else if(row <= 3) {
 					brick.setFillColor(Color.orange);
-				} else if (row <= 5) {
+				} else if(row <= 5) {
 					brick.setFillColor(Color.yellow);
-				} else if (row <= 7) {
+				} else if(row <= 7) {
 					brick.setFillColor(Color.green);
-				} else if (row <= 9) {
+				} else if(row <= 9) {
 					brick.setFillColor(Color.cyan);
 				}
 				add(brick);

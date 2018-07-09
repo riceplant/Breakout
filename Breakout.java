@@ -95,5 +95,34 @@ public class Breakout extends GraphicsProgram {
 			}
 		}
 	}
+	
+	public void init() {
+		
+		/** Setting the Paddle in the middle of the display*/
+		startingX = (APPLICATION_WIDTH - PADDLE_WIDTH) / 2;
+		startingY = APPLICATION_HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
+		
+		paddle = new GRect(startingX, startingY, PADDLE_WIDTH, PADDLE_HEIGHT);
+		paddle.setFilled(true);
+		paddle.setFillColor(Color.black);
+		add(paddle);
+		addMouseListeners();
+	}
+	
+	public void mousePressed(MouseEvent e) {
+		last = new GPoint(e.getPoint()); 
+		gobj = getElementAt(last);
+	}
+	
+	public void mouseMoved(MouseEvent e) {
+		if (gobj != null) {
+			gobj.move(e.getX() - last.getX(), e.getY() - last.getY());
+			last = new GPoint (e.getPoint());
+		}
+	}
+	
+	private GRect paddle;
+	private GPoint last;
+	private GObject gobj;
 
 }

@@ -63,10 +63,11 @@ public class Breakout extends GraphicsProgram {
 /* Method: run() */
 /** Runs the Breakout program. */
 	public void run() {
-		setup();
+		setupBricks();
+		drawPaddle();
 	}
 	
-	private void setup() {
+	private void setupBricks() {
 		
 		/** Setting the x and y-coordinate to center the bricks in the middle of display */
 		startingX = APPLICATION_WIDTH / 2 - (BRICK_WIDTH * NBRICKS_PER_ROW) / 2;
@@ -96,33 +97,32 @@ public class Breakout extends GraphicsProgram {
 		}
 	}
 	
-	public void init() {
+	public void drawPaddle() {
 		
 		/** Setting the Paddle in the middle of the display*/
-		startingX = (APPLICATION_WIDTH - PADDLE_WIDTH) / 2;
-		startingY = APPLICATION_HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
+		double paddleX = (APPLICATION_WIDTH - PADDLE_WIDTH) / 2;
+		double paddleY = APPLICATION_HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
 		
-		paddle = new GRect(startingX, startingY, PADDLE_WIDTH, PADDLE_HEIGHT);
+		paddle = new GRect(paddleX, paddleY, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setFilled(true);
 		paddle.setFillColor(Color.black);
 		add(paddle);
 		addMouseListeners();
 	}
 	
-	public void mousePressed(MouseEvent e) {
-		last = new GPoint(e.getPoint()); 
-		gobj = getElementAt(last);
-	}
-	
+	/** Makes paddle tracking the mouse */
 	public void mouseMoved(MouseEvent e) {
-		if (gobj != null) {
-			gobj.move(e.getX() - last.getX(), e.getY() - last.getY());
-			last = new GPoint (e.getPoint());
+		lastX = e.getX(); 
+		
+		/** prevents the paddle to go off screen */
+		
+		if ((e.getX() < APPLICATION_WIDTH - PADDLE_WIDTH / 2) && (e.getX() > PADDLE_WIDTH / 2) ) {
+			paddle.setLocation(lastX - PADDLE_WIDTH / 2, APPLICATION_HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT);
 		}
 	}
 	
 	private GRect paddle;
-	private GPoint last;
-	private GObject gobj;
+	private double lastX;
+	
 
 }

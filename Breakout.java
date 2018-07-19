@@ -57,14 +57,27 @@ public class Breakout extends GraphicsProgram {
 /** Number of turns */
 	private static final int NTURNS = 3;
 	
+/** Initializing starting point for X and Y for the bricks*/
 	private double startingX = 0;
 	private double startingY = 0;
+	
+/** Initializing GRect for paddle and  */
+	private GRect paddle;
+	private double lastX;
+	
+/** Animation cycle delay */
+	private static final int DELAY = 6;
 
 /* Method: run() */
 /** Runs the Breakout program. */
 	public void run() {
 		setupBricks();
 		drawPaddle();
+		bouncingBall();
+		while (bouncingBall != null) {
+			moveBouncingBall();
+			pause(DELAY);
+		}
 	}
 	
 	private void setupBricks() {
@@ -121,8 +134,51 @@ public class Breakout extends GraphicsProgram {
 		}
 	}
 	
-	private GRect paddle;
-	private double lastX;
+	/** Creating the ball and making it bouncing off the walls */
+	public void bouncingBall() {
+		
+		/** Getting the diameter of the ball */
+		int ballHeight = BALL_RADIUS * 2;
+		int ballWidth = BALL_RADIUS * 2;
+		
+		/** Setting the x and y coordinates of ball to the middle of the display */
+		double ballX = (APPLICATION_WIDTH - ballWidth) / 2;
+		double ballY = (APPLICATION_HEIGHT - ballHeight) / 2;
+		
+		bouncingBall = new GOval(ballX, ballY, ballWidth, ballHeight);
+		bouncingBall.setFilled(true);
+		add(bouncingBall);
+		
+	}
 	
-
+	/** Lets the bouncing ball move inside the display */
+	private void moveBouncingBall() {
+		
+		vx = rgen.nextDouble(1.0, 3.0);
+		if (rgen.nextBoolean(0.5)) {
+			vx = -vx;
+		}
+		
+		vy = 3.0;
+				
+		if(ballDown) {
+			bouncingBall.move(vx, vy);
+			
+			if (bouncingBall.getY() >= APPLICATION_HEIGHT - BALL_RADIUS * 2) {
+				ballDown = false;
+			}
+		} 
+	}
+	
+	/** Velocity of the ball */
+	private double vx, vy;
+	
+	/** Random number generator */
+	private RandomGenerator rgen = RandomGenerator.getInstance();
+	
+	private GOval bouncingBall;
+	private boolean ballUp;
+	private boolean ballDown = true;
+	private boolean ballLeft;
+	private boolean ballRight;
 }

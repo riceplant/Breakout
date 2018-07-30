@@ -74,6 +74,7 @@ public class Breakout extends GraphicsProgram {
 		setupBricks();
 		drawPaddle();
 		bouncingBall();
+		getBallVelocity();
 		while (bouncingBall != null) {
 			moveBouncingBall();
 			pause(DELAY);
@@ -83,7 +84,7 @@ public class Breakout extends GraphicsProgram {
 	private void setupBricks() {
 		
 		/** Setting the x and y-coordinate to center the bricks in the middle of display */
-		startingX = APPLICATION_WIDTH / 2 - (BRICK_WIDTH * NBRICKS_PER_ROW) / 2;
+		startingX = WIDTH / 2 - (BRICK_WIDTH * NBRICKS_PER_ROW) / 2;
 		startingY = BRICK_Y_OFFSET;
 		
 		for(int row = 0; row < NBRICK_ROWS; row++) {
@@ -113,8 +114,8 @@ public class Breakout extends GraphicsProgram {
 	public void drawPaddle() {
 		
 		/** Setting the Paddle in the middle of the display*/
-		double paddleX = (APPLICATION_WIDTH - PADDLE_WIDTH) / 2;
-		double paddleY = APPLICATION_HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
+		double paddleX = (WIDTH - PADDLE_WIDTH) / 2;
+		double paddleY = HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT;
 		
 		paddle = new GRect(paddleX, paddleY, PADDLE_WIDTH, PADDLE_HEIGHT);
 		paddle.setFilled(true);
@@ -129,8 +130,8 @@ public class Breakout extends GraphicsProgram {
 		
 		/** prevents the paddle to go off screen */
 		
-		if ((e.getX() < APPLICATION_WIDTH - PADDLE_WIDTH / 2) && (e.getX() > PADDLE_WIDTH / 2) ) {
-			paddle.setLocation(lastX - PADDLE_WIDTH / 2, APPLICATION_HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT);
+		if ((e.getX() < WIDTH - PADDLE_WIDTH / 2) && (e.getX() > PADDLE_WIDTH / 2) ) {
+			paddle.setLocation(lastX - PADDLE_WIDTH / 2, HEIGHT - PADDLE_Y_OFFSET - PADDLE_HEIGHT);
 		}
 	}
 	
@@ -142,8 +143,8 @@ public class Breakout extends GraphicsProgram {
 		int ballWidth = BALL_RADIUS * 2;
 		
 		/** Setting the x and y coordinates of ball to the middle of the display */
-		double ballX = (APPLICATION_WIDTH - ballWidth) / 2;
-		double ballY = (APPLICATION_HEIGHT - ballHeight) / 2;
+		double ballX = (WIDTH - ballWidth) / 2;
+		double ballY = (HEIGHT - ballHeight) / 2;
 		
 		bouncingBall = new GOval(ballX, ballY, ballWidth, ballHeight);
 		bouncingBall.setFilled(true);
@@ -151,23 +152,39 @@ public class Breakout extends GraphicsProgram {
 		
 	}
 	
-	/** Lets the bouncing ball move inside the display */
-	private void moveBouncingBall() {
-		
+	private void getBallVelocity() {
+		vy = 3.0;
 		vx = rgen.nextDouble(1.0, 3.0);
 		if (rgen.nextBoolean(0.5)) {
 			vx = -vx;
 		}
-		
-		vy = 3.0;
+	}
+	
+	/** Lets the bouncing ball move inside the display */
+	private void moveBouncingBall() {
 				
 		if(ballDown) {
 			bouncingBall.move(vx, vy);
 			
-			if (bouncingBall.getY() >= APPLICATION_HEIGHT - BALL_RADIUS * 2) {
-				ballDown = false;
+			if (bouncingBall.getX() >= WIDTH - BALL_RADIUS * 2 || bouncingBall.getX() <= 0 ) {
+				vx = -vx;
 			}
-		} 
+			
+			if (bouncingBall.getY() >= HEIGHT - BALL_RADIUS * 2) {
+				ballDown = false;
+				ballUp = true;
+				bouncingBall.move(vx, -vy);
+			}
+			
+		} else if (ballUp) {
+			bouncingBall.move(vx, -vy);
+			
+			if (bouncingBall.getY() <= 0) {
+				ballUp = false;
+				ballDown = true;
+				bouncingBall.move(vx, vy);
+			}
+		}
 	}
 	
 	/** Velocity of the ball */
@@ -179,6 +196,4 @@ public class Breakout extends GraphicsProgram {
 	private GOval bouncingBall;
 	private boolean ballUp;
 	private boolean ballDown = true;
-	private boolean ballLeft;
-	private boolean ballRight;
 }

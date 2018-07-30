@@ -84,7 +84,7 @@ public class Breakout extends GraphicsProgram {
 	private void setupBricks() {
 		
 		/** Setting the x and y-coordinate to center the bricks in the middle of display */
-		startingX = WIDTH / 2 - (BRICK_WIDTH * NBRICKS_PER_ROW) / 2;
+		startingX = WIDTH / 2 - ((NBRICKS_PER_ROW + 1) * BRICK_WIDTH) / 2;
 		startingY = BRICK_Y_OFFSET;
 		
 		for(int row = 0; row < NBRICK_ROWS; row++) {

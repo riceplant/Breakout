@@ -7,13 +7,15 @@
  * This file will eventually implement the game of Breakout.
  */
 
-import acm.graphics.*;
-import acm.program.*;
-import acm.util.*;
+import java.awt.Color;
+import java.awt.event.MouseEvent;
 
-import java.applet.*;
-import java.awt.*;
-import java.awt.event.*;
+import acm.graphics.GLabel;
+import acm.graphics.GObject;
+import acm.graphics.GOval;
+import acm.graphics.GRect;
+import acm.program.GraphicsProgram;
+import acm.util.RandomGenerator;
 
 public class Breakout extends GraphicsProgram {
 
@@ -67,6 +69,9 @@ public class Breakout extends GraphicsProgram {
 	
 /** Animation cycle delay */
 	private static final int DELAY = 6;
+	
+/** Ball counter */
+	int ballCounter = 3;
 
 /* Method: run() */
 /** Runs the Breakout program. */
@@ -74,17 +79,18 @@ public class Breakout extends GraphicsProgram {
 		setupBricks();
 		drawPaddle();
 		bouncingBall();
+		waitForClick();
 		getBallVelocity();
-		while (bouncingBall != null) {
+		while (bouncingBall != null && ballCounter != 0) {
 			moveBouncingBall();
 			pause(DELAY);
 		}
 	}
 	
-	private void setupBricks() {
+	public void setupBricks() {
 		
 		/** Setting the x and y-coordinate to center the bricks in the middle of display */
-		startingX = WIDTH / 2 - ((NBRICKS_PER_ROW + 1) * BRICK_WIDTH) / 2;
+		startingX = WIDTH / 2 - (BRICK_WIDTH * (NBRICKS_PER_ROW + 1)) / 2;
 		startingY = BRICK_Y_OFFSET;
 		
 		for(int row = 0; row < NBRICK_ROWS; row++) {
@@ -149,7 +155,6 @@ public class Breakout extends GraphicsProgram {
 		bouncingBall = new GOval(ballX, ballY, ballWidth, ballHeight);
 		bouncingBall.setFilled(true);
 		add(bouncingBall);
-		
 	}
 	
 	private void getBallVelocity() {
@@ -166,25 +171,99 @@ public class Breakout extends GraphicsProgram {
 		if(ballDown) {
 			bouncingBall.move(vx, vy);
 			
+			/** when the ball is moving down and it reaches the end of both sides change the direction of x */
 			if (bouncingBall.getX() >= WIDTH - BALL_RADIUS * 2 || bouncingBall.getX() <= 0 ) {
 				vx = -vx;
 			}
 			
+			/** when the ball hits the ground
+			 *  subtract ball counter by 1
+			 *  and reset the game
+			 *  if ball counter reaches 0 
+			 *  display gameOver on display */
+			
+			/*if (bouncingBall.getY() >= HEIGHT - BALL_RADIUS * 2) {
+				ballDown = false;
+				ballUp = true;
+				bouncingBall.move(vx, -vy);
+			}*/
+			
 			if (bouncingBall.getY() >= HEIGHT - BALL_RADIUS * 2) {
+				ballCounter -= 1;
+				remove(bouncingBall);
+				bouncingBall();
+				for (int i = 0; i < ballCounter; i++) {
+					waitForClick();
+				}
+				
+				if (ballCounter == 0) {
+					remove(bouncingBall);
+					gameOver();
+				}
+				
+			}
+			
+			/** If ball collides with the paddle, make the ball moves upwards */
+			GObject collider = getCollidingObject();
+			if (collider == paddle) {
 				ballDown = false;
 				ballUp = true;
 				bouncingBall.move(vx, -vy);
 			}
 			
+			
 		} else if (ballUp) {
 			bouncingBall.move(vx, -vy);
 			
+			/** when the ball is moving down and it reaches the end of both sides change the direction of x */
+			if (bouncingBall.getX() >= WIDTH - BALL_RADIUS * 2 || bouncingBall.getX() <= 0 ) {
+				vx = -vx;
+			
+			}
+			
+			/** If ball collides with the paddle, make the ball moves upwards */
+			GObject collider = getCollidingObject();
+			if (collider != null) {
+				ballUp = false;
+				ballDown = true;
+				remove(collider);
+				add(paddle);
+				bouncingBall.move(vx, -vy);
+			}
+				
 			if (bouncingBall.getY() <= 0) {
 				ballUp = false;
 				ballDown = true;
 				bouncingBall.move(vx, vy);
 			}
+			
 		}
+	}
+	
+	/** displays Game Over on the Screen */
+	private void gameOver() {
+		GLabel gameOver = new GLabel("Game Over", (WIDTH - BRICK_WIDTH * 3) / 2, (HEIGHT - BRICK_HEIGHT * 4) / 2);
+		gameOver.setFont("Helvetica-24");
+		add(gameOver);
+		
+	}
+	
+	/** check if the ball is colliding on the edges of the Ball using GRect edges */
+	private GObject getCollidingObject() {
+		
+		if ((getElementAt(bouncingBall.getX(), bouncingBall.getY())) != null) {
+			return getElementAt(bouncingBall.getX(), bouncingBall.getY());
+		
+		} else if ((getElementAt(bouncingBall.getX() + 2 * BALL_RADIUS, bouncingBall.getY())) != null) {
+			return getElementAt(bouncingBall.getX() + 2 * BALL_RADIUS, bouncingBall.getY());
+		
+		} else if ((getElementAt(bouncingBall.getX(), bouncingBall.getY() + 2 * BALL_RADIUS)) != null) {
+			return getElementAt(bouncingBall.getX(), bouncingBall.getY() + 2 * BALL_RADIUS);
+		
+		} else if ((getElementAt(bouncingBall.getX() + 2 * BALL_RADIUS, bouncingBall.getY() + 2 * BALL_RADIUS)) != null) {
+			return getElementAt(bouncingBall.getX() + 2 * BALL_RADIUS, bouncingBall.getY() + 2 * BALL_RADIUS);
+		
+		} return null;
 	}
 	
 	/** Velocity of the ball */

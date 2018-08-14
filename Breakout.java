@@ -72,6 +72,9 @@ public class Breakout extends GraphicsProgram {
 	
 /** Ball counter */
 	int ballCounter = 3;
+	
+/** Bricks counter */
+	int numberOfBricks = 100;
 
 /* Method: run() */
 /** Runs the Breakout program. */
@@ -182,13 +185,17 @@ public class Breakout extends GraphicsProgram {
 			 *  if ball counter reaches 0 
 			 *  display gameOver on display */
 			
-			/*if (bouncingBall.getY() >= HEIGHT - BALL_RADIUS * 2) {
+			if (bouncingBall.getY() >= HEIGHT - BALL_RADIUS * 2) {
 				ballDown = false;
 				ballUp = true;
 				bouncingBall.move(vx, -vy);
-			}*/
+			}
 			
-			if (bouncingBall.getY() >= HEIGHT - BALL_RADIUS * 2) {
+			if (numberOfBricks == 0) {
+				gameOver();
+			}
+			
+			/*if (bouncingBall.getY() >= HEIGHT - BALL_RADIUS * 2) {
 				ballCounter -= 1;
 				remove(bouncingBall);
 				bouncingBall();
@@ -201,13 +208,22 @@ public class Breakout extends GraphicsProgram {
 					gameOver();
 				}
 				
-			}
+			}*/
 			
 			/** If ball collides with the paddle, make the ball moves upwards */
 			GObject collider = getCollidingObject();
 			if (collider == paddle) {
 				ballDown = false;
 				ballUp = true;
+				bouncingBall.move(vx, -vy);
+			}
+			
+			if (collider != null) {
+				ballDown = false;
+				ballUp = true;
+				remove(collider);
+				numberOfBricks -= 1;
+				add(paddle);
 				bouncingBall.move(vx, -vy);
 			}
 			
@@ -227,6 +243,7 @@ public class Breakout extends GraphicsProgram {
 				ballUp = false;
 				ballDown = true;
 				remove(collider);
+				numberOfBricks -= 1;
 				add(paddle);
 				bouncingBall.move(vx, -vy);
 			}
